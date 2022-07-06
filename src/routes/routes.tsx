@@ -2,8 +2,7 @@ import * as React from "react";
 import Main from "../page/main/main";
 import Home from "../page/home/home";
 import { useRoutes } from "react-router-dom";
-import A from "../page/A/A";
-import B from "../page/B/B";
+import Time from "../page/time";
 
 let getRoute = () => {
   return [
@@ -12,12 +11,8 @@ let getRoute = () => {
       element: <Main />,
       children: [
         {
-          path: "/home",
-          element: <Home />,
-          children: [
-            { path: "/home/:id/a", element: <A /> },
-            { path: "/home/:id/b", element: <B /> },
-          ],
+          path: "/time",
+          element: <Time />,
         },
       ],
     },
