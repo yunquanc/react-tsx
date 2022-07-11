@@ -1,28 +1,36 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, Link, useRoutes, useParams } from "react-router-dom";
+import moment from "moment";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { DatePicker, Form, Button, DatePickerProps } from "antd";
 import { CAPI } from "../../lib";
 import "./index.less";
 const { RangePicker } = DatePicker;
 const _CAPI = new CAPI();
-const Time = (props: any) => {
-  // 初始值
-  const [data, setData] = useState([]);
-
-  const loadList = () => {
-    _CAPI.list().then((res) => {
-      console.log(res.data.data.name);
-      setData(res.data.data.name);
-    });
-  };
-
+const Insert = (props: any) => {
   const [form] = Form.useForm();
   const _props: any = props;
-  const onFinish = (values: any) => {
-    console.log("Success:", values);
+  console.log(form);
+
+  let insertDAte = async (param: { date: Number; timeList: any[] }) => {
+    param.timeList = param.timeList.map((e: Number[]): any => {
+      e = [
+        Math.floor((e[0] as any) / 1000) * 1000,
+        Math.floor((e[1] as any) / 1000) * 1000,
+      ];
+      return e;
+    });
+    param.date = new Date(param.date as any).getTime();
+    let res = await _CAPI.insert(param);
+    console.log(res);
   };
 
+  // 表单成功事件
+  const onFinish = (values: any) => {
+    console.log("Success:", values);
+    insertDAte(values);
+  };
+
+  // 表单失败事件
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
@@ -48,30 +56,25 @@ const Time = (props: any) => {
   };
   return (
     <div>
-      {data.map((e) => {
-        return <div key={e["_id"]}>{e["date"]}</div>;
-      })}
-      <Button type="primary" htmlType="submit" onClick={() => loadList()}>
-        +
-      </Button>
       <Form
+        form={form}
         name="basic"
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
-        initialValues={{ remember: true }}
+        initialValues={{ date: moment(), timeList: [[]] }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
         <Form.Item
-          label="Username"
-          name="username"
+          label="date"
+          name="date"
           rules={[{ required: true, message: "Please input your username!" }]}
         >
           <DatePicker onChange={onChange} picker="month" />
         </Form.Item>
         <Form.List
-          name="names"
+          name="timeList"
           rules={[
             {
               validator: async (_, names) => {
@@ -101,7 +104,22 @@ const Time = (props: any) => {
                         validateTrigger={["onChange", "onBlur"]}
                       >
                         <RangePicker
-                          showTime={{ format: "HH:mm" }}
+                          showTime={{
+                            defaultValue: [
+                              moment({
+                                h: 0,
+                                m: 0,
+                                s: 0,
+                                ms: 0,
+                              }),
+                              moment({
+                                h: 0,
+                                m: 0,
+                                s: 0,
+                                ms: 0,
+                              }),
+                            ],
+                          }}
                           format="YYYY-MM-DD HH:mm"
                         />
                       </Form.Item>
@@ -116,7 +134,7 @@ const Time = (props: any) => {
                 );
               })}
               <Form.Item label="新增时间段">
-                <Button type="primary" htmlType="submit" onClick={() => add()}>
+                <Button type="primary" onClick={() => add()}>
                   +
                 </Button>
               </Form.Item>
@@ -134,4 +152,4 @@ const Time = (props: any) => {
   );
 };
 
-export default Time;
+export default Insert;
