@@ -14,4 +14,10 @@ export class CAPI extends HTTP implements IAPI {
   insert(param: { date: Number; timeList: Number[] }): Promise<any> {
     return super.post("/api/insert", { ...param });
   }
+  save(param: {}): Promise<any> {
+    return super.post("/api/save", { ...param });
+  }
+  getTemp(): Promise<any> {
+    return super.post("/api/gettemp", {});
+  }
 }

@@ -8,10 +8,11 @@ const { RangePicker } = DatePicker;
 const _CAPI = new CAPI();
 const Insert = (props: any) => {
   const [form] = Form.useForm();
+  const [initialValues] = useState({ date: moment(), timeList: [[]] });
   const _props: any = props;
   console.log(form);
 
-  let insertDAte = async (param: { date: Number; timeList: any[] }) => {
+  let insertDate = async (param: { date: Number; timeList: any[] }) => {
     param.timeList = param.timeList.map((e: Number[]): any => {
       e = [
         Math.floor((e[0] as any) / 1000) * 1000,
@@ -27,8 +28,30 @@ const Insert = (props: any) => {
   // 表单成功事件
   const onFinish = (values: any) => {
     console.log("Success:", values);
-    insertDAte(values);
+    insertDate(values);
   };
+
+  const save = async () => {
+    let res = await _CAPI.save(form.getFieldsValue());
+  };
+
+  const getTemp = async () => {
+    let res = await _CAPI.getTemp();
+    if (res.data.data.date) {
+      res.data.data.date = moment(res.data.data.date);
+      res.data.data.timeList =
+        res.data.data.timeList && res.data.data.timeList.length
+          ? res.data.data.timeList.map((e: any) => {
+              return [moment(e[0]), moment(e[1])];
+            })
+          : [[]];
+      form.setFieldsValue({ ...res.data.data });
+    }
+  };
+
+  useEffect(() => {
+    getTemp();
+  }, []);
 
   // 表单失败事件
   const onFinishFailed = (errorInfo: any) => {
@@ -61,7 +84,7 @@ const Insert = (props: any) => {
         name="basic"
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
-        initialValues={{ date: moment(), timeList: [[]] }}
+        initialValues={initialValues}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
@@ -143,6 +166,9 @@ const Insert = (props: any) => {
           )}
         </Form.List>
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+          <Button type="primary" onClick={() => save()}>
+            save
+          </Button>
           <Button type="primary" htmlType="submit">
             Submit
           </Button>

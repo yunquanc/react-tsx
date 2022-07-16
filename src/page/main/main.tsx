@@ -4,6 +4,7 @@ import "antd/dist/antd.css";
 import { ConfigProvider, Layout } from "antd";
 import "./main.less";
 import zhCN from "antd/lib/locale/zh_CN";
+import HeaderMenu from "../../components/menu";
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -14,11 +15,15 @@ const Main = (props: any) => {
     <div className="main">
       <ConfigProvider locale={zhCN}>
         <Layout>
-          <Header>Header</Header>
+          <Header>
+            <HeaderMenu></HeaderMenu>
+          </Header>
           <Content>
             <Outlet></Outlet>
           </Content>
-          <Footer>Footer</Footer>
+          <Footer>
+            <a href="https://beian.miit.gov.cn">沪ICP备19037710号-1</a>
+          </Footer>
         </Layout>
       </ConfigProvider>
     </div>
